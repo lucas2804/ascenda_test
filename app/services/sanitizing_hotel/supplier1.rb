@@ -6,7 +6,7 @@ module SanitizingHotel
     def execute
       hotels = fetch_request
       hotels.map do |hotel_params|
-        find_or_create_hotel!(hotel_params)
+        hotel = find_or_create_hotel!(hotel_params)
       end
     end
 
@@ -15,16 +15,16 @@ module SanitizingHotel
     def find_or_create_hotel!(hotel_params)
       hotel = Hotel.find_or_initialize_by(hotel_id: hotel_params['Id'])
       params = {
-        hotel_id: hotel_params['Id'],
-        name: hotel_params['Name'].strip,
-        description: hotel_params['Description'].strip,
-        address: hotel_params['Address'].strip,
-        longitude: hotel_params['Longitude'],
-        latitude: hotel_params['Latitude'],
-        postal_code: hotel_params['PostalCode'].strip,
-        destination_id: hotel_params['DestinationId'],
-        city: hotel_params['City'].strip,
-        country: hotel_params['Country'].strip,
+        hotel_id: hotel_params['Id']&.strip,
+        name: hotel_params['Name']&.strip,
+        description: hotel_params['Description']&.strip,
+        address: hotel_params['Address']&.strip,
+        longitude: hotel_params['Longitude']&.to_f,
+        latitude: hotel_params['Latitude']&.to_f,
+        postal_code: hotel_params['PostalCode']&.strip,
+        destination_id: hotel_params['DestinationId']&.to_i,
+        city: hotel_params['City']&.strip,
+        country: hotel_params['Country']&.strip,
       }
       hotel.update_attributes!(params)
       hotel.reload

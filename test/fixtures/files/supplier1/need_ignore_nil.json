@@ -1,0 +1,19 @@
+[
+  {
+    "Id": "SjyX",
+    "DestinationId": 2121,
+    "Name": "InterContinental Singapore Robertson Quay",
+    "Latitude": null,
+    "Longitude": null,
+    "Address": "  160-0023, SHINJUKU-KU, 6  ",
+    "City": null,
+    "Country": null,
+    "PostalCode": null,
+    "Description": null,
+    "Facilities": [
+      " Pool",
+      " WiFi ",
+      "Aircon"
+    ]
+  }
+]
