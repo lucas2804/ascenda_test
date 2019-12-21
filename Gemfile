@@ -23,6 +23,7 @@ group :development, :test do
   gem 'dotenv-rails'
   gem 'simplecov', require: false
   gem 'simplecov-console', require: false
+  gem 'factory_bot_rails'
   gem 'pry'
   gem 'pry-byebug'
   gem 'dotenv-rails'
