@@ -7,7 +7,7 @@ RSpec.describe SanitizingHotel::Supplier1 do
 
     it 'should create 2 hotels with specified params' do
       service
-      binding.pry
+      expect(Hotel.count).to eq(2)
     end
 
     it 'should sanitize data, strip and downcase value' do
