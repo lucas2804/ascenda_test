@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_21_171015) do
+ActiveRecord::Schema.define(version: 201912210052626) do
+
+  create_table "amenities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name"
+    t.integer "category"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category"], name: "index_amenities_on_category"
+  end
 
   create_table "hotels", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "destination_id"
@@ -29,6 +37,15 @@ ActiveRecord::Schema.define(version: 2019_12_21_171015) do
     t.datetime "updated_at", null: false
     t.index ["destination_id"], name: "index_hotels_on_destination_id"
     t.index ["hotel_id"], name: "index_hotels_on_hotel_id"
+  end
+
+  create_table "hotels_amenities", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "hotel_id"
+    t.integer "amenity_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["amenity_id"], name: "index_hotels_amenities_on_amenity_id"
+    t.index ["hotel_id"], name: "index_hotels_amenities_on_hotel_id"
   end
 
 end
