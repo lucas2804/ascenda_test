@@ -1,19 +1,19 @@
 require 'rails_helper'
 
-RSpec.describe SanitizingHotel::Supplier1 do
-  let(:service) { SanitizingHotel::Supplier1.new }
+RSpec.describe SanitizingHotel::Supplier2 do
+  let(:service) { SanitizingHotel::Supplier2.new }
   let(:fake_response) { '{}' }
 
   describe '#fetch_request' do
-    let(:fake_response) { File.open('test/fixtures/files/supplier1/supplier1.json').read }
+    let(:fake_response) { File.open('test/fixtures/files/supplier2/supplier2.json').read }
 
     before do
       parse_fake_response = JSON.parse(fake_response)
       expect(service).to receive(:fetch_request).and_return(parse_fake_response)
     end
-    it 'should create 3 hotels with specified params' do
+    it 'should create 2 hotels with specified params' do
       service.execute
-      expect(Hotel.count).to eq(3)
+      expect(Hotel.count).to eq(2)
     end
   end
 
@@ -22,30 +22,27 @@ RSpec.describe SanitizingHotel::Supplier1 do
       parse_fake_response = JSON.parse(fake_response)
       expect(service).to receive(:fetch_request).and_return(parse_fake_response)
     end
-
     context 'hotel params contain space at head and end lines' do
-      let(:fake_response) { File.open('test/fixtures/files/supplier1/need_strip_hotel.json').read }
+      let(:fake_response) { File.open('test/fixtures/files/supplier2/need_strip_hotel.json').read }
       it 'should sanitize data, strip' do
         service.execute
         hotel = Hotel.first
         expect(hotel.hotel_id[0]).not_to eq(' ')
-        expect(hotel.description[0]).not_to eq(' ')
+        expect(hotel.detail[0]).not_to eq(' ')
         expect(hotel.address[0]).not_to eq(' ')
         expect(hotel.name[0]).not_to eq(' ')
         expect(hotel.country[0]).not_to eq(' ')
-        expect(hotel.postal_code[0]).not_to eq(' ')
 
         expect(hotel.hotel_id.last).not_to eq(' ')
-        expect(hotel.description.last).not_to eq(' ')
+        expect(hotel.detail.last).not_to eq(' ')
         expect(hotel.address.last).not_to eq(' ')
         expect(hotel.name.last).not_to eq(' ')
         expect(hotel.country.last).not_to eq(' ')
-        expect(hotel.postal_code.last).not_to eq(' ')
       end
     end
 
     context 'hotel params contain nil values but name, hotel_id, address' do
-      let(:fake_response) { File.open('test/fixtures/files/supplier1/need_ignore_nil.json').read }
+      let(:fake_response) { File.open('test/fixtures/files/supplier2/need_ignore_nil.json').read }
       it 'should create hotel without not important data normally' do
         service.execute
         expect(Hotel.count).to eq(1)
@@ -65,30 +62,27 @@ RSpec.describe SanitizingHotel::Supplier1 do
     end
   end
 
-  describe '#update_amenities!' do
-    it 'should change camelcase to normal words and strip' do
-      amenity_params = { 'Facilities' => [' DryCleaning ', '  BusinessCenter  '] }
-      service.send(:update_amenities!, amenity_params)
-      expect(Amenity.first.name).to eq('dry cleaning')
-      expect(Amenity.last.name).to eq('business center')
-    end
+  describe '#update_amenities!!' do
+    let(:amenity_params) {
+      {
+        "amenities" => {
+          "general" => [
+            "outdoor pool",
+          ],
+          "room" => [
+            "coffee machine",
+          ]
+        }
+      }
+    }
+    it 'should call update_sanitized_amenities!' do
+      expect(service).to receive(:update_sanitized_amenities!).with(anything, Amenity.categories[:general]).and_call_original
+      expect(service).to receive(:update_sanitized_amenities!).with(anything, Amenity.categories[:room]).and_call_original
 
-    it 'should not sanitize CONCATENATE_WORDS as WiFi' do
-      amenity_params = { 'Facilities' => [' WiFi '] }
       service.send(:update_amenities!, amenity_params)
-      expect(Amenity.first.name).to eq('wifi')
-    end
-
-    it 'should check each word then ignore if in CONCATENATE_WORDS' do
-      amenity_params = { 'Facilities' => ['AzzBbb WiFi C'] }
-      service.send(:update_amenities!, amenity_params)
-      expect(Amenity.first.name).to eq('azz bbb wifi c')
-    end
-
-    it 'should create amenity with category general' do
-      amenity_params = { 'Facilities' => ['AzzBbb WiFi C'] }
-      service.send(:update_amenities!, amenity_params)
-      expect(Amenity.first.category).to eq('general')
+      expect(Amenity.count).to eq(2)
+      expect(Amenity.general.first.name).to eq('outdoor pool')
+      expect(Amenity.room.first.name).to eq('coffee machine')
     end
   end
 end
