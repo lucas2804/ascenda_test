@@ -1,14 +1,13 @@
 module SanitizingHotel
-  class Supplier2
-    include Helper
+  class Supplier2 < Base
 
     def execute
       hotels = fetch_request(url)
       hotels.map do |hotel_params|
         hotel = find_or_create_hotel!(hotel_params)
         amenities = update_amenities!(hotel_params)
-
         update_hotel_amenities(hotel, amenities)
+        update_booking_conditions(hotel.id, hotel_params['booking_conditions'])
       end
     end
 

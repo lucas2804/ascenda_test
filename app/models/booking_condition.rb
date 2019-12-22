@@ -1,0 +1,2 @@
+class BookingCondition < ApplicationRecord
+end

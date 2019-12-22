@@ -7,11 +7,11 @@ RSpec.describe SanitizingHotel::Supplier2 do
   describe '#fetch_request' do
     let(:fake_response) { File.open('test/fixtures/files/supplier2/supplier2.json').read }
 
-    before do
+    it 'should create 2 hotels with specified params' do
       parse_fake_response = JSON.parse(fake_response)
       expect(service).to receive(:fetch_request).and_return(parse_fake_response)
-    end
-    it 'should create 2 hotels with specified params' do
+      expect(service).to receive(:update_hotel_amenities).exactly(2).times
+
       service.execute
       expect(Hotel.count).to eq(2)
     end

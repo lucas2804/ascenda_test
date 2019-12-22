@@ -7,11 +7,11 @@ RSpec.describe SanitizingHotel::Supplier1 do
   describe '#fetch_request' do
     let(:fake_response) { File.open('test/fixtures/files/supplier1/supplier1.json').read }
 
-    before do
+    it 'should create 3 hotels with specified params' do
       parse_fake_response = JSON.parse(fake_response)
       expect(service).to receive(:fetch_request).and_return(parse_fake_response)
-    end
-    it 'should create 3 hotels with specified params' do
+      expect(service).to receive(:update_hotel_amenities).exactly(3).times
+
       service.execute
       expect(Hotel.count).to eq(3)
     end
@@ -53,42 +53,14 @@ RSpec.describe SanitizingHotel::Supplier1 do
     end
   end
 
-  describe '#update_hotel_amenities' do
-    let(:hotel) { create(:hotel) }
-    let(:amenities) { create_list(:amenity, 2) }
-    it 'should create hotel with relate amenities' do
-      service.send(:update_hotel_amenities, hotel, amenities)
-
-      hotel = Hotel.first
-      expect(hotel.amenities.size).to eq(2)
-      expect(HotelsAmenity.count).to eq(2)
-    end
-  end
-
   describe '#update_amenities!' do
-    it 'should change camelcase to normal words and strip' do
-      amenity_params = { 'Facilities' => [' DryCleaning ', '  BusinessCenter  '] }
+    let(:amenity_params) { { 'Facilities' => ['AzzBbb WiFi C'] } }
+    it 'should call update_sanitized_amenities! from Base' do
+      expect(service).to receive(:update_sanitized_amenities!).with(amenity_params['Facilities'], anything).and_call_original
       service.send(:update_amenities!, amenity_params)
-      expect(Amenity.first.name).to eq('dry cleaning')
-      expect(Amenity.last.name).to eq('business center')
-    end
 
-    it 'should not sanitize CONCATENATE_WORDS as WiFi' do
-      amenity_params = { 'Facilities' => [' WiFi '] }
-      service.send(:update_amenities!, amenity_params)
-      expect(Amenity.first.name).to eq('wifi')
-    end
-
-    it 'should check each word then ignore if in CONCATENATE_WORDS' do
-      amenity_params = { 'Facilities' => ['AzzBbb WiFi C'] }
-      service.send(:update_amenities!, amenity_params)
+      expect(Amenity.count).to eq(1)
       expect(Amenity.first.name).to eq('azz bbb wifi c')
-    end
-
-    it 'should create amenity with category general' do
-      amenity_params = { 'Facilities' => ['AzzBbb WiFi C'] }
-      service.send(:update_amenities!, amenity_params)
-      expect(Amenity.first.category).to eq('general')
     end
   end
 end

@@ -1,7 +1,5 @@
 module SanitizingHotel
-  class Supplier1
-    include Helper
-
+  class Supplier1 < Base
     def execute
       hotels = fetch_request(url)
       hotels.map do |hotel_params|

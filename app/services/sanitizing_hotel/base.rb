@@ -1,6 +1,12 @@
 module SanitizingHotel
-  module Helper
-    CONCATENATE_WORDS = ['wifi']
+  class Base
+    CONCATENATE_WORDS = %w(wifi bathtub)
+
+    def update_booking_conditions(hotel_id, booking_conditions)
+      booking_conditions&.map do |condition|
+        BookingCondition.find_or_create_by({ hotel_id: hotel_id, condition: condition })
+      end
+    end
 
     def update_sanitized_amenities!(amenity_params, category)
       amenity_params&.map do |amenity_name|
