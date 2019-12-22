@@ -1,3 +1,3 @@
 class Amenity < ApplicationRecord
-  enum categories: { general: 1, room: 2 }
+  enum category: { general: 1, room: 2 }
 end
