@@ -1,11 +1,11 @@
 require 'rails_helper'
 
-RSpec.describe SanitizingHotel::Supplier2 do
-  let(:service) { SanitizingHotel::Supplier2.new }
+RSpec.describe SanitizingHotel::Supplier3 do
+  let(:service) { SanitizingHotel::Supplier3.new }
   let(:fake_response) { '{}' }
 
   describe '#fetch_request' do
-    let(:fake_response) { File.open('test/fixtures/files/supplier2/supplier2.json').read }
+    let(:fake_response) { File.open('test/fixtures/files/supplier3/supplier3.json').read }
 
     before do
       parse_fake_response = JSON.parse(fake_response)
@@ -23,7 +23,7 @@ RSpec.describe SanitizingHotel::Supplier2 do
 
       expect(HotelImage.count).to eq(4)
       expect(HotelImage.room.count).to eq(2)
-      expect(HotelImage.site.count).to eq(2)
+      expect(HotelImage.amenities.count).to eq(2)
     end
   end
 
@@ -33,26 +33,24 @@ RSpec.describe SanitizingHotel::Supplier2 do
       expect(service).to receive(:fetch_request).and_return(parse_fake_response)
     end
     context 'hotel params contain space at head and end lines' do
-      let(:fake_response) { File.open('test/fixtures/files/supplier2/need_strip_hotel.json').read }
+      let(:fake_response) { File.open('test/fixtures/files/supplier3/need_strip_hotel.json').read }
       it 'should sanitize data, strip' do
         service.execute
         hotel = Hotel.first
         expect(hotel.hotel_id[0]).not_to eq(' ')
-        expect(hotel.detail[0]).not_to eq(' ')
+        expect(hotel.info[0]).not_to eq(' ')
         expect(hotel.address[0]).not_to eq(' ')
         expect(hotel.name[0]).not_to eq(' ')
-        expect(hotel.country[0]).not_to eq(' ')
 
         expect(hotel.hotel_id.last).not_to eq(' ')
-        expect(hotel.detail.last).not_to eq(' ')
+        expect(hotel.info.last).not_to eq(' ')
         expect(hotel.address.last).not_to eq(' ')
         expect(hotel.name.last).not_to eq(' ')
-        expect(hotel.country.last).not_to eq(' ')
       end
     end
 
     context 'hotel params contain nil values but name, hotel_id, address' do
-      let(:fake_response) { File.open('test/fixtures/files/supplier2/need_ignore_nil.json').read }
+      let(:fake_response) { File.open('test/fixtures/files/supplier3/need_ignore_nil.json').read }
       it 'should create hotel without not important data normally' do
         service.execute
         expect(Hotel.count).to eq(1)
@@ -73,26 +71,14 @@ RSpec.describe SanitizingHotel::Supplier2 do
   end
 
   describe '#update_amenities!!' do
-    let(:amenity_params) {
-      {
-        "amenities" => {
-          "general" => [
-            "outdoor pool",
-          ],
-          "room" => [
-            "coffee machine",
-          ]
-        }
-      }
-    }
+    let(:amenity_params) { { "amenities" => ["Coffee machine"] } }
+
     it 'should call update_sanitized_amenities!' do
       expect(service).to receive(:update_sanitized_amenities!).with(anything, Amenity.categories[:general]).and_call_original
-      expect(service).to receive(:update_sanitized_amenities!).with(anything, Amenity.categories[:room]).and_call_original
 
       service.send(:update_amenities!, amenity_params)
-      expect(Amenity.count).to eq(2)
-      expect(Amenity.general.first.name).to eq('outdoor pool')
-      expect(Amenity.room.first.name).to eq('coffee machine')
+      expect(Amenity.count).to eq(1)
+      expect(Amenity.general.first.name).to eq('coffee machine')
     end
   end
 end

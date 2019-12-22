@@ -35,7 +35,7 @@ module SanitizingHotel
 
     def update_hotel_amenities(hotel, amenities)
       exist_hotel_amenity_names = hotel.amenities.map(&:name)
-      amenities = amenities.select do |amenity|
+      amenities = amenities&.select do |amenity|
         amenity unless amenity.name.in? exist_hotel_amenity_names
       end
       hotel.amenities << amenities if amenities.present?

@@ -28,6 +28,7 @@ module SanitizingHotel
         city: hotel_params['City']&.strip,
         country: hotel_params['Country']&.strip,
       }
+      params = params.reject { |k, v| v == nil }
       hotel.update_attributes!(params)
       hotel.reload
     end
