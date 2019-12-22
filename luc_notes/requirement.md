@@ -54,7 +54,7 @@ In this exercise, we assume the following:
   - Procuring the data
   - Delivering the data
 
-```
+```json
 [
   {
     "id": "iJhz",
