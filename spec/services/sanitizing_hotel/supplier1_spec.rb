@@ -14,6 +14,7 @@ RSpec.describe SanitizingHotel::Supplier1 do
 
       service.execute
       expect(Hotel.count).to eq(3)
+      expect(Location.count).to eq(3)
     end
   end
 
@@ -29,18 +30,19 @@ RSpec.describe SanitizingHotel::Supplier1 do
         service.execute
         hotel = Hotel.first
         expect(hotel.hotel_id[0]).not_to eq(' ')
-        expect(hotel.description[0]).not_to eq(' ')
-        expect(hotel.address[0]).not_to eq(' ')
         expect(hotel.name[0]).not_to eq(' ')
-        expect(hotel.country[0]).not_to eq(' ')
-        expect(hotel.postal_code[0]).not_to eq(' ')
-
+        expect(hotel.description[0]).not_to eq(' ')
         expect(hotel.hotel_id.last).not_to eq(' ')
         expect(hotel.description.last).not_to eq(' ')
-        expect(hotel.address.last).not_to eq(' ')
         expect(hotel.name.last).not_to eq(' ')
-        expect(hotel.country.last).not_to eq(' ')
-        expect(hotel.postal_code.last).not_to eq(' ')
+
+        location = hotel.location
+        expect(location.address[0]).not_to eq(' ')
+        expect(location.country[0]).not_to eq(' ')
+        expect(location.postal_code[0]).not_to eq(' ')
+        expect(location.address.last).not_to eq(' ')
+        expect(location.country.last).not_to eq(' ')
+        expect(location.postal_code.last).not_to eq(' ')
       end
     end
 

@@ -16,6 +16,7 @@ RSpec.describe SanitizingHotel::Supplier3 do
       expect(service).to receive(:update_hotel_amenities).exactly(2).times
       service.execute
       expect(Hotel.count).to eq(2)
+      expect(Location.count).to eq(2)
     end
 
     it 'should create 2 room_images and 2 site_images' do
@@ -38,14 +39,15 @@ RSpec.describe SanitizingHotel::Supplier3 do
         service.execute
         hotel = Hotel.first
         expect(hotel.hotel_id[0]).not_to eq(' ')
-        expect(hotel.info[0]).not_to eq(' ')
-        expect(hotel.address[0]).not_to eq(' ')
         expect(hotel.name[0]).not_to eq(' ')
-
+        expect(hotel.info[0]).not_to eq(' ')
         expect(hotel.hotel_id.last).not_to eq(' ')
         expect(hotel.info.last).not_to eq(' ')
-        expect(hotel.address.last).not_to eq(' ')
         expect(hotel.name.last).not_to eq(' ')
+
+        location = hotel.location
+        expect(location.address[0]).not_to eq(' ')
+        expect(location.address.last).not_to eq(' ')
       end
     end
 

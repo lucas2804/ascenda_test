@@ -4,6 +4,7 @@ module SanitizingHotel
       hotels = fetch_request(url)
       hotels.map do |hotel_params|
         hotel = find_or_create_hotel!(hotel_params)
+        update_location!(hotel, hotel_params)
         amenities = update_amenities!(hotel_params)
         update_hotel_amenities(hotel, amenities)
         update_booking_conditions(hotel.id, hotel_params['booking_conditions'])
@@ -12,6 +13,16 @@ module SanitizingHotel
     end
 
     private
+
+    def update_location!(hotel, hotel_params)
+      location_params = {
+        address: hotel_params['location']&.fetch('address', nil)&.strip,
+        country: hotel_params['location']&.fetch('country', nil)&.strip
+      }
+      location_params = location_params.reject { |k, v| v == nil }
+      update_sanitize_location(hotel, location_params)
+    end
+
 
     def update_hotel_images(hotel, hotel_params)
       hotel_params['images']['rooms']&.map do |img_hash|
@@ -34,12 +45,9 @@ module SanitizingHotel
     def find_or_create_hotel!(hotel_params)
       hotel = Hotel.find_or_initialize_by(hotel_id: hotel_params['hotel_id']&.strip)
       params = {
-        hotel_id: hotel_params['hotel_id']&.strip,
-        name: hotel_params['hotel_name']&.strip,
-        address: hotel_params['location']&.fetch('address', nil)&.strip,
-        detail: hotel_params['details']&.strip,
         destination_id: hotel_params['destination_id'],
-        country: hotel_params['location']&.fetch('country', nil)&.strip
+        name: hotel_params['hotel_name']&.strip,
+        detail: hotel_params['details']&.strip,
       }
       params = params.reject { |k, v| v == nil }
       hotel.update_attributes!(params)

@@ -54,6 +54,7 @@ ActiveRecord::Schema.define(version: 201912221702071) do
     t.string "postal_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "location_id"
     t.index ["destination_id"], name: "index_hotels_on_destination_id"
     t.index ["hotel_id"], name: "index_hotels_on_hotel_id"
   end
@@ -73,6 +74,7 @@ ActiveRecord::Schema.define(version: 201912221702071) do
     t.string "address"
     t.string "city"
     t.string "country"
+    t.string "postal_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

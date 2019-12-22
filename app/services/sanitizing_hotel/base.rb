@@ -2,6 +2,16 @@ module SanitizingHotel
   class Base
     CONCATENATE_WORDS = %w(wifi bathtub)
 
+    def update_sanitize_location(hotel, location_params)
+      if hotel.location
+        hotel.location.update_attributes!(location_params)
+      else
+        hotel.location = Location.create(location_params)
+        hotel.save
+      end
+      hotel.location.reload
+    end
+
     def update_booking_conditions(hotel_id, booking_conditions)
       booking_conditions&.map do |condition|
         BookingCondition.find_or_create_by({ hotel_id: hotel_id, condition: condition })
