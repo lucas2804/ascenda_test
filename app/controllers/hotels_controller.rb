@@ -9,6 +9,17 @@ class HotelsController < ApplicationController
     render json: @hotels
   end
 
+  def sync_data
+    SanitizingHotel::Supplier1.new.execute
+    SanitizingHotel::Supplier2.new.execute
+    SanitizingHotel::Supplier3.new.execute
+
+    render json: {
+      message: 'Sync data successfully from Supplier1 2 3',
+      total_hotels: Hotel.count
+    }
+  end
+
   # GET /hotels/1
   # GET /hotels/1.json
   def show
@@ -43,13 +54,14 @@ class HotelsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_hotel
-      @hotel = Hotel.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def hotel_params
-      params.require(:hotel).permit(:hotel_id, :destination_id, :name)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_hotel
+    @hotel = Hotel.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def hotel_params
+    params.require(:hotel).permit(:hotel_id, :destination_id, :name)
+  end
 end
