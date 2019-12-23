@@ -5,6 +5,8 @@ class HotelsController < ApplicationController
   # GET /hotels.json
   def index
     @hotels = Hotel.all
+    @hotels = @hotels.where(hotel_id: params['hotel_ids']) if params['hotel_ids'].present?
+    @hotels = @hotels.where(hotel_id: params['destination_ids']) if params['destination_ids'].present?
 
     render json: @hotels
   end
