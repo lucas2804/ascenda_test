@@ -38,7 +38,7 @@ curl http://localhost:3000/?hotel_ids[]=iJhz&destination_ids[]=5432
 ```mysql
 SELECT `hotels`.* FROM `hotels` WHERE `hotels`.`hotel_id` = 'iJhz';
 
-SELECT `hotels`.* FROM `hotels` WHERE `hotels`.`hotel_id` = 'iJhz' AND `hotels`.`hotel_id` = '5432' AND `hotels`.`hotel_id` = '5432' AND `hotels`.`hotel_id` = '5432';
+SELECT `hotels`.* FROM `hotels` WHERE `hotels`.`hotel_id` = 'iJhz' AND `hotels`.`destination_id` = '5432';
 ```
 
 #### 3) Get hotel data endpoint
