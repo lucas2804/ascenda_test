@@ -6,7 +6,7 @@ class HotelsController < ApplicationController
   def index
     @hotels = Hotel.all
     @hotels = @hotels.where(hotel_id: params['hotel_ids']) if params['hotel_ids'].present?
-    @hotels = @hotels.where(hotel_id: params['destination_ids']) if params['destination_ids'].present?
+    @hotels = @hotels.where(destination_id: params['destination_ids'].map(&:to_i)) if params['destination_ids'].present?
 
     render json: @hotels
   end
