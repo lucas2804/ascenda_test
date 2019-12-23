@@ -1,0 +1,22 @@
+language: ruby
+rvm:
+  - 2.5.5
+bundler_args: --jobs=2
+script:
+  - bundle exec rake db:setup
+cache: bundler
+services:
+  - mysql
+jobs:
+  include:
+    - stage: unit tests
+      before_script: "bundle exec rake db:setup"
+      script: "bundle exec rake spec"
+    - stage: deploy to production
+      script: skip
+      deploy:
+        provider: heroku
+        app: ascenda
+        api_key: c462081e-db1a-4598-a9d4-e5a9731371b6
+    - stage: test production
+      script: 'curl https://ascenda.herokuapp.com'
